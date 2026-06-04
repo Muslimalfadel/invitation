@@ -74,6 +74,7 @@
             border-radius: 50px;
             cursor: pointer;
             transition: transform 0.2s, background-color 0.2s;
+            touch-action: manipulation;
         }
 
         .btn-yes {
@@ -278,7 +279,7 @@
             <p>Choose your answer honestly...</p>
             <div class="btn-container">
                 <button class="btn-yes" onclick="nextStep(2)">Yes, absolutely! 😍</button>
-                <button class="btn-no" id="noBtn" onmouseover="moveNoButton()" onclick="moveNoButton()">NO Too busy 😢</button>
+                <button class="btn-no" id="noBtn" onmouseover="moveNoButton()" onclick="moveNoButton()" ontouchstart="moveNoButton()">NO Too busy 😢</button>
             </div>
         </div>
 
@@ -367,9 +368,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('datePicker').setAttribute('min', today);
+            
+            // على الموبايل، الزرار يتحرك كل 800 ميلي ثانية عشان ميقدرش يمسكه
+            if ('ontouchstart' in window) {
+                setInterval(function() {
+                    moveNoButton();
+                }, 800);
+            }
         });
 
-        // حركة زر الـ No في المساحة الفاضية فوق الأزرار
+        // حركة زر الـ No - شغال على الكمبيوتر والموبايل
         function moveNoButton() {
             const noBtn = document.getElementById('noBtn');
             const card = document.querySelector('.card');
@@ -380,15 +388,12 @@
             const btnHeight = noBtn.offsetHeight;
             const padding = 15;
 
-            // المساحة المتاحة: من تحت العنوان لحد نص الكارد تقريباً
             const maxY = (cardHeight / 2) - btnHeight - padding;
             const maxX = cardWidth - btnWidth - (padding * 2);
 
-            // توليد موقع عشوائي
             const randomX = Math.floor(Math.random() * maxX) + padding;
-            const randomY = Math.floor(Math.random() * maxY) + 100; // يبدأ من تحت العنوان
+            const randomY = Math.floor(Math.random() * maxY) + 100;
 
-            // تطبيق الحركة - absolute بالنسبة للكارد
             noBtn.style.position = 'absolute';
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
